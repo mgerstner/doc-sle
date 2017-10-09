@@ -340,7 +340,6 @@ also be used on virtulization hosts or container based environments that
 connect to the outside via a specific interface.
 </para>
 </sect3>
-
 </sect2>
 </sect1>
 </appendix>
