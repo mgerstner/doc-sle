@@ -18,29 +18,18 @@
       </dm:docmanager>
     </info>
     <!-- This chapter is very much WIP and not ready for publication. -->
-<!-- <highlights/> -->
-<!-- Useful resources:
-Positive Research Center (describing PCI-DSS 1.0!)
-+ (Part 1) http://blog.ptsecurity.com/2010/07/red-card-specificity-of-pci-dss-in.html
-+ (Part 2) http://blog.ptsecurity.com/2010/07/red-card-specificity-of-pci-dss-in_19.html
-+ (Part 3) http://blog.ptsecurity.com/2010/08/pci-dss-and-red-hat-enterprise-linux.html
-+ (Part 4) http://blog.ptsecurity.com/2010/09/pci-dss-and-red-hat-enterprise-linux.html
-+ (Part 5) http://blog.ptsecurity.com/2010/09/pci-dss-and-red-hat-enterprise-linux_03.html
-+ (Part 6) http://blog.ptsecurity.com/2010/10/pci-dss-and-red-hat-enterprise-linux.html
-+ (Part 7) http://blog.ptsecurity.com/2010/10/pci-dss-and-red-hat-enterprise-linux_20.html
-+ (Part 8) http://blog.ptsecurity.com/2010/11/requirement-10-track-and-monitor-all.html
-+ (Part 9) http://blog.ptsecurity.com/2010/11/pci-dss-and-red-hat-enterprise-linux.html
 
-NetIQ (for cross-BU promotion) (note that Novell Sentinel was
-renamed to NetIQ Sentinel at some point):
-+ https://www.netiq.com/industries/federal/regulations-standards-compliance/pci-dss.html
-
-  -->
 <sect1>
 <title>Introduction</title>
  <para>
-  Any company that handles card payments from customers will need to protect their data and keep it as safe and secure as possible. This is on a mutual basis to protect customers and the business itself. For this, it is important to evaluate all aspects of the business environment that are somehow involved in processing cardholder data. The PCI Data Security Standards helps to cover all areas that are somehow part of the process and to implement security relevant actions to keep the data and the environment it relies on save.
- </para>
+  Any company that handles card payments from customers will need to protect
+  their data and keep it as safe and secure as possible. This is on a mutual
+  basis to protect customers and the business itself. For this, it is important
+  to evaluate all aspects of the business environment that are somehow involved
+  in processing cardholder data. The PCI Data Security Standards helps to cover
+  all areas that are somehow part of the process and to implement security
+  relevant actions to keep the data and the environment it relies on save.
+</para>
 
 <para>
   An essential part is the combination of actions. It is not only necessary to
@@ -53,8 +42,8 @@ renamed to NetIQ Sentinel at some point):
 </sect1>
 
 <sect1>
-<title>What is PCI DSS?</title>
-<para>
+  <title>What is PCI DSS?</title>
+  <para>
 The Payment Card Industry Data Security Standard (PCI DSS) is a set of
 requirements to guide a merchant to protect credit cardholder data. The
 standard covers 6 main categories with currently 12 requirement topics how to
@@ -202,8 +191,11 @@ to address the growing threat of online credit card fraud. The current version
 <title>Requirements in Detail</title>
 <sect2>
 <title>Build and Maintain a Secure Network and Systems</title>
-<sect3>
-<title>Install and maintain a firewall configuration to protect cardholder data</title>
+<variablelist>
+  <varlistentry>
+<term>Install and maintain a firewall configuration to protect cardholder
+data</term>
+<listitem>
 <para>
   The listed terms in this section are mostly design, documentation and formal
   process requirements. All changes to the firewalls and routers are need to be
@@ -224,18 +216,24 @@ services and protocols. After that it comes down to limiting the traffic to and
 from the system to tighten up the boundaries so that unneeded and unwanted
 traffic is directly avoided.
 </para>
-</sect3>
+</listitem>
+  </varlistentry>
 
-<sect3>
-<title>Identify insecure services, protocols, and ports allowed; and verify
-that security features are documented for each service</title>
+<varlistentry>
+<term>Identify insecure services, protocols, and ports allowed; and verify
+that security features are documented for each service</term>
+<listitem>
 <para>
 This task is embedded into the requirement to identify, document and justify all services and protocols running on a system. A special interest are services and protocols that could lead to a security risk. If a certain insecure service or protocol is used it needs to be evaluated and understood how big the security impact could be. A service or protocol that is not for business operation should be disabled or removed.
 </para>
-</sect3>
+</listitem>
+</varlistentry>
 
-<sect3>
-<title>Examine firewall and router configurations to verify that inbound and outbound traffic is limited to that which is necessary for the cardholder data environment</title>
+<varlistentry>
+<term>Examine firewall and router configurations to verify that inbound and
+outbound traffic is limited to that which is necessary for the cardholder data
+environment</term>
+<listitem>
 <para>
 Inbound traffic filtering rules can be directly defined via the YaST firewall
 module. Systems with multiple interfaces can be configured in such a way that
@@ -259,11 +257,14 @@ requirement 1.2.1.c.</para>
 
 <screen>iptables -A OUTPUT -d 10.0.0.4/32 -o eth0 -p udp -m udp --dport 53 -j
 ACCEPT</screen>
+</listitem>
+</varlistentry>
 
-</sect3>
-
-<sect3>
-<title>Examine firewall and router configurations to verify that all other inbound and outbound traffic is specifically denied, for example by using an explicit “deny all” or an implicit deny after allow statement</title>
+<varlistentry>
+<term>Examine firewall and router configurations to verify that all other
+inbound and outbound traffic is specifically denied, for example by using an
+explicit “deny all” or an implicit deny after allow statement</term>
+<listitem>
 <para>
 The "deny all" rules of other inbound and outbound traffic can easily be achieved with iptables. The INPUT and FORWARD table policies are directly set by the SuSEfirewall2 script so that all unwanted traffic gets droped. (Forwarding is usually completely disabled by a kernel parameter and shouldn't be enabled for endpoint servers.)
 </para>
@@ -288,10 +289,13 @@ inbound and outbound rules are really limiting the traffic between and within
 all network segments, like the DMZ and the Internet, to a needed minimum for
 full system operation.
 </para>
-</sect3>
+</listitem>
+</varlistentry>
 
-<sect3>
-<title>Implement anti-spoofing measures to detect and block forged source IP addresses from entering the network</title>
+<varlistentry>
+<term>Implement anti-spoofing measures to detect and block forged source IP
+addresses from entering the network</term>
+<listitem>
 <para>
 There a two ways to implement anti-spoofing measurements in &sle;. The first
 one is the use of iptables rules that only allow input from certain addresses
@@ -304,10 +308,12 @@ packet got in, it is treated as a bogus packet and is dropped. This feature is
 enabled by default in &sle; and can be check with the following command. This
 should give back a 1 when it is enabled.</para>
 <screen>cat /proc/sys/net/ipv4/conf/all/rp_filter</screen>
-</sect3>
+</listitem>
+</varlistentry>
 
-<sect3>
-<title>Permit only established connections into the network</title>
+<varlistentry>
+<term>Permit only established connections into the network</term>
+<listitem>
 <para>
 SuSEfirewall2 directly enables connection tracking via iptables. Connections to
 an interface that has been marked as external are dropped by default. Only
@@ -326,10 +332,13 @@ never reach the DMZ network. However, simple firewall rules on the SUSE Linux
 Enterprise systems can help to avoid misconfiguration issues and act as another
 line in the defense mechanism.
 </para>
-</sect3>
+</listitem>
+</varlistentry>
 
-<sect3>
-<title>Do not disclose private IP addresses and routing information to unauthorized parties</title>
+<varlistentry>
+<term>Do not disclose private IP addresses and routing information to
+unauthorized parties</term>
+<listitem>
 <para>
 A &sle; system can also act as a router to forward traffic from one interface
 to another network on a second interface. It is possible to use Network Address
@@ -339,7 +348,237 @@ external attacker can gather by simply analyzing the network traffic. NAT can
 also be used on virtulization hosts or container based environments that
 connect to the outside via a specific interface.
 </para>
-</sect3>
+</listitem>
+</varlistentry>
+</variablelist>
 </sect2>
+
+<sect2>
+<title>Do not use vendor-supplied defaults for system passwords and other security parameters</title>
+<para>
+During system installation of &sle; general system passwords
+are already set by the administrator. The setup uses also a password checker
+(cracklib) that identifies weak entries against a common dictionary. So for
+most services the standard configuration comes already with customer defined
+security options.
+</para>
+<para>
+This is also stated inside the SUSE Linux Enterprise Server Security and
+Hardening Guide, that should be a general resource to tighten security
+further. This helps to meet the requirements in this section.
+</para>
+
+<variablelist>
+<varlistentry>
+<term>Always change vendor-supplied defaults and remove or disable unnecessary
+default accounts before installing a system on the network</term>
+<listitem>
+<para>
+The configuration of any system service has to be evaluated to meet the needed
+security standards. This goes from limiting the used protocols to only allow
+currently secure versions and to disable legacy implementations, to the
+definition of access controls and authentication. SUSE Linux Enterprise
+predefined settings are already security aware, but settings can be tightened
+ever further. For example, this is the case with the SNMP daemon where by
+default incoming requests are only allowed to localhost. The default community
+string is named 'public' and should be changed before accepting general inbound
+connections.</para>
+
+<para>
+A second example are the default settings of the ssh daemon that are listed and
+commented out inside the sshd configuration file '/etc/ssh/sshd_config'. On
+default the insecure protocol 1 is already disabled. The same goes for
+permitting empty passwords (PermitEmptyPasswords no). To tighten ssh security
+it would best practice to deny direct root access by setting “PermitRootLogin”
+to no.
+</para>
+
+<para>
+Default settings can also be customized during automated system installation
+via an AutoYaST profile. This makes it easy to roll out new instances of &sles;
+and directly enable an evaluated configuration. The whole setup procedure can
+even be completely automated with the SUSE Manager[2]. &sle; does not install
+additional default accounts apart of the root administration user. There are
+system accounts defined in /etc/passwd, but they are not activated and
+therefore not directly reachable. This can be validated by checking the lines
+inside the /etc/shadow file. The second column represents the defined
+password. An asterisk (*) at this place means that no password was ever defined
+and the account is therefore locked. An exclamation (!) stands for a locked
+account and can stand all by itself or in front of a password hash.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Develop configuration standards for all system components. Assure that
+these standards address all known security vulnerabilities and are consistent
+with industry-accepted system hardening standards</term>
+<listitem>
+<para>
+As mentioned inside the PCI DSS document, possible sources for
+industry-accepted hardening standards are:
+</para>
+
+<itemizedlist>
+<listitem>
+<para>
+Center for Internet Security (CIS)
+</para>
+</listitem>
+<listitem>
+<para>
+International Organization for Standardization (ISO)
+</para>
+</listitem>
+<listitem>
+<para>
+SysAdmin Audit Network Security (SANS) Institute
+</para>
+</listitem>
+<listitem>
+<para>
+National Institute of Standards Technology (NIST)
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+In general, as the PCI DSS requirements are quite fuzzy, there is no direct
+mapping of hardening standards to specific requirements. However, any hardening
+resource, including the SLES Security and Hardening Guide[1], help to fulfill
+this specifications.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Implement only one primary function per server to prevent functions that
+require different security levels from co-existing on the same server</term>
+<listitem>
+<para>
+(For example, web servers, database servers, and DNS should be implemented on
+separate servers.)
+</para>
+
+<para>
+With &sles; it is easily possible to separate services by
+using virtualization. SLES12 SP1 comes with the virtualization methods KVM,
+Xen, Linux Containers and Docker to isolate services. This makes it easy to
+fulfill the requirement and isolate services from each other. It is also
+possible to run SLES on proprietary virtualization servers like VMware ESX or
+Microsoft Hyper-V to achieve service separation.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Enable only necessary services, protocols, daemons, etc., as required for
+the function of the system</term>
+<listitem>
+<para>
+This requirement is aligned with the firewall requirement 1.1.6.b to allow only
+services that are really needed and are using secure protocols and
+settings. All involved parties need to be aware of the impact of using insecure
+communication that could be comprised. The risk of using insecure protocols
+and/or services should be clearly understood and documented.
+</para>
+
+<para>
+Since SLES12 enabling and disabling system services is done via
+systemd. Changes can be entered by using the systemctl tool.
+</para>
+<screen>systemctl status [SERVICE]
+	systemctl enable [SERVICE]
+	systemctl disable [SERVICE]</screen>
+
+<para>
+To list all available services that are installed on the system and see their status use the following command.
+	systemctl list-unit-files –type=service
+      </para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Inspect configuration settings to verify that security features are
+documented and implemented for all insecure services, daemons, or
+protocols</term>
+<listitem>
+<para>
+One way to add an additional layer of security to insecure services is the
+usage of VPN tunnels (i.e. IPsec). With this, the network traffic of such
+services can be isolated and all data, internally and externally, is protected
+against eavesdropping. It must be clear that the communication is still
+insecure at the endpoints of the VPN tunnel and that this is just a workaround.
+</para>
+<para>
+Additional security within SUSE Linux Enterprise Server can also be provided
+with the usage of SELinux or AppArmor. At this stage the setup of these methods
+is beyond the scope of this document. A good starting point to get familiar
+with the SELinux framework is main chapter V of the SUSE Linux Enterprise
+Server 12 SP1 Security Guide.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Select a sample of system components and inspect the configurations to
+verify that all unnecessary functionality (for example, scripts, drivers,
+features, subsystems, file systems, etc.) is removed</term>
+<listitem>
+<para>
+One main system component is the Linux kernel that consist of a core image that
+is extended by numerous kernel modules depending on the used hardware and
+system design. Network card drivers are automatically loaded depending on the
+availability inside the system and filesystem modules are used to extend the
+Linux kernel's functionality. The list of loaded kernel modules is usually
+quite long and includes modules that are only used occasionally. The kernel
+module framework makes it easy to blacklist certain modules and to limit the
+functionality.
+</para>
+
+<para>A simple way to block modules from being loaded is the configuration via
+the /etc/modprobe.d directory. For instance, if we would like to prevent the
+kernel module 'floppy' from being loaded, as systems these days have usually no
+floppy drive anymore, we create the following configuration file.
+
+File: /etc/modprobe.d/00-disable-modules.conf
+	install floppy /bin/true
+</para>
+
+<para>
+Please be aware that the floppy module is usually loaded during the execution of the initial ram disk. Therefore it is necessary to propagate such a configuration change to the initrd file. This has to be done via the ''mkinitrd'' script.
+	mkinitrd
+</para>
+<para>
+It is not that easy to do the same with application functionality. Usually the
+functionality is compiled into the binaries itself or be part of a library,
+which makes it impossible to being removed explicitly. Furthermore it has to be
+clear that removed files that where part of an RPM package are reinstalled when
+a package update is published.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Encrypt all non-console administrative access using strong
+cryptography. Use technologies such as SSH, VPN, or TLS for web-based
+management and other non-console administrative access
+</term>
+<listitem>
+<para>
+It is quite straight forward to fulfill this requirement. Any administrative
+network access needs to be encrypted. The first tool of choice here is SSH with
+appropriate configuration settings that fit into the security
+concept. Administrative access can also be granted via a website. In this case
+the complete connection chain between the browser and the server system needs
+to be encrypted. This is done via TLS and x509 certificates.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</sect2>
+
+
+
 </sect1>
 </appendix>
