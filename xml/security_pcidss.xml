@@ -578,7 +578,416 @@ to be encrypted. This is done via TLS and x509 certificates.
 </variablelist>
 </sect2>
 
+<sect2>
+<title>Protect Cardholder Data</title>
+<para>
+The main prospect of this chapter is how to handle cardholder and
+authentication data securely. Cardholder data are information like the
+cardholder name and the Primary Account Number (PAN). Authentication data
+include the Personal Identification Number (PIN) and the Card Validation Code
+(CVC2). The main difference between cardholder data and authentication data is
+the fact that it is not allowed to store the authentication data in any
+case. The PAN on the other hand is allowed to be stored, but it needs to be
+encrypted and unreadable in case someone gains access to the stored data.
+</para>
 
+<para>
+As mentioned before in chapter 2 “Areas relevant to the Operating System” the
+used database design for saving cardholder data is not inside the scope of the
+OS. However, data encryption can be done in different ways. The DBMS can
+directly use column-level encryption inside the database scheme or the used
+files can be encrypted. The easiest way with SLES is to use full disk
+encryption so that the whole database storage is always encrypted. It has to be
+clear that access to the encrypted block device is the same as to a non
+encrypted disk. This is discussed in 3.4.1 in more detail.
+</para>
+<variablelist>
+  <varlistentry>
+<term>If disk encryption is used, inspect the configuration and observe the
+authentication process to verify that logical access to encrypted file systems
+is implemented via a mechanism that is separate from the native operating
+system's authentication mechanism (for example, not using local user account
+databases or general network login credentials).</term>
+<listitem>
+<para>
+The guidance description of the PCI DSS document says the following about this requirement:
+"Full disk encryption helps to protect data in the event of physical loss of a
+disk and therefore may be appropriate for portable devices that store
+cardholder data."
+</para>
+
+<para>
+From the administrator point of view a block device encryption with the Linux
+Unified Key Setup (LUKS)/dm-crypt offers an abstraction layer that allows the
+usage of fully encrypted devices in the same way as non encrypted
+disks. Therefore access control can only be limited with the general ACL
+permissions that the used filesystem offers. To be compliant with this
+requirement the used decryption key cannot be associated with any general login
+credentials or authentication methods. With LUKS this is usually the case as
+the password needs to be entered separately during boot time, portable device
+insertion or manual disk activation.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Examine the configurations and observe the processes to verify that
+cardholder data on removable media is encrypted wherever stored</term>
+<listitem>
+<para>
+As described in the last section, LUKS/dm-crypt is a full disk encryption
+system that fulfills exactly this requirement. Access to the stored data is
+only possible via a decryption password that needs to be entered during disk
+insertion. The LUKS system in fully integrated into SLES and can be used via
+YaST to create new partitions.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</sect2>
+
+<sect2>
+<title>Encrypt transmission of cardholder data across open, public
+networks</title>
+<para>
+Cardholder data has to be encrypted during transmissions over insecure
+networks. Best practice would be to try to encrypt all traffic, externally and
+internally, to make it as hard as possible for malicious individuals to gain
+inside information and possible privileged access to the cardholder data
+environment.
+</para>
+
+<variablelist>
+<varlistentry>
+<term>Use strong cryptography and security protocols (for example, TLS, IPSEC,
+SSH, etc.) to safeguard sensitive cardholder data during transmission over
+open, public networks, including the following:
+</term>
+<listitem>
+<itemizedlist>
+<listitem>
+<para>
+Only trusted keys and certificates are accepted
+</para>
+</listitem>
+<listitem>
+<para>
+The protocol in use only supports secure versions or configurations
+</para>
+</listitem>
+<listitem>
+<para>
+The encryption strength is appropriate for the encryption methodology in use
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+Every connection that transmits sensitive information has to be protected against eavesdropping and tampering.
+For incoming client requests this can be done via HTTPS that is using a secure
+TLS connection. The authentication is done with a public x.509 certificate that
+proves to a certain level that the server is the right endpoint the customer is
+looking for.
+</para>
+
+<para>
+SLES comes with a set of services and tools that allow protected HTTPS
+connections, i.e. this can be directly done with the Apache HTTP Server or via
+stunnel that functions as a proxy to offer TLS encryption functionality. IPsec
+or other VPN technologies can be used for securing the connection between
+network segments that are connected via a public network. This connections can
+also be secured with a public x.509 certificate. For internal usage it would be
+possible to use a private Certificate Authority (CA) to sign x.509 certificates
+and to keep track on trusted keys. In SLES this can be directly established
+with strongSwan that is a IPsec-based VPN solution or with OpenVPN that is
+using a custom security protocol.
+</para>
+
+<para>
+Administration access to the OS level is usually done via SSH. Configuration
+and authentication can be tightened to meet the needed security. This was
+partially stated before inside the requirements 1 and 2.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</sect2>
+
+<sect2>
+<title>Maintain a Vulnerability Management Program</title>
+<variablelist>
+<varlistentry>
+<term>Protect all systems against malware and regularly update anti-virus
+software or programs</term>
+<listitem>
+<para>
+For PCI DSS compliance it is necessary to protect against malicious software
+threats. Commercial anti-virus software is available from the major anti-virus
+software vendors and can be integrated into the Linux environment. SLES itself
+comes with the open source anti-virus engine ClamAV.
+</para>
+
+<para>
+The question here is which functionality and performance is needed. ClamAV has
+a limited set of scanning capabilities and limited performance compared to
+commercial products. So the expectations have to be clear that ClamAV only
+gives only a simple protection level.
+</para>
+
+<para>
+On the other hand ClamAV is directly shipped with SLES and can be included
+during server installation. This makes it easy to fulfill the details of this
+requirement, but the drawbacks compared to commercial products have to be
+clearly understood.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+<variablelist>
+<varlistentry>
+<term>Requirement 6: Develop and maintain secure systems and
+applications</term>
+<listitem>
+<para>
+A powerful instrument in SUSE Linux Enterprise is the command-line tool zypper
+that is an interface to the ZYpp system management library (libzypp). Among
+other things it solves packages, products, patterns and patches dependencies,
+has a locking mechanism to prevent package installation and provides a complete
+update stack to keep the system up to date and protected against know security
+issues. The zypper tool is part of any SLES installation and has direct access
+to the update repositories after system registration.
+</para>
+
+<para>
+For system management we provide SUSE Manager that provides an efficient way to
+keep systems up-to-date. It offers seamless management of both SUSE Linux
+Enterprise and Red Hat Enterprise Linux client systems. This is particularly
+handy in larger system environments, to check the current update status of each
+system and to react on know security risks.
+</para>
+
+<para>
+Most parts of this requirement are about in-house security software
+development, documentation and design questions. In this prospect we will keep
+our scope on how to keep the operating system maintained and secure.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Examine policies and procedures related to security patch installation to
+verify processes are defined for:</term>
+
+<listitem>
+<itemizedlist>
+<listitem>
+<para>
+Installation of applicable critical vendor-supplied security patches within one
+month of release
+</para>
+</listitem>
+<listitem>
+<para>
+Installation of all applicable vendor-supplied security patches within an
+appropriate time frame (for example, within three months)
+</para>
+</listitem>
+</itemizedlist>
+
+<para>
+The following command examples will show how to identify patches that need to be installed in order to run a secure system.
+First refresh all software repositories so that we have up-to-date
+information.</para>
+
+<screen>zypper refresh</screen>
+
+<para>
+Now we can look for important security fixes that have not yet been installed
+</para>
+
+<screen>zypper list-patches --category security --severity important</screen>
+
+<para>
+It is also possible to search for CVE or SUSE bugzilla numbers. By default only
+needed patches are listed by this commands. To show also patches that have
+already been installed use the --all switch. 
+</para>
+
+<screen>zypper list-patches --all --cve=CVE-2016-4957</screen>
+
+<para>
+Details of individual patches can be listed with the patch-info
+sub-command.</para>
+
+<screen>zypper patch-info SUSE-SLE-SERVER-12-SP1-2016-600</screen>
+
+<para>
+To install only important security patches use the patch command. All zypper
+commands can be run with the --non-interactive switch to run
+automatically.
+</para>
+
+<screen>zypper patch --category security --severity important</screen>
+
+</listitem>
+</varlistentry>
+</variablelist>
+</sect2>
+
+<sect2>
+<title>Implement Strong Access Control Measures</title>
+<variablelist>
+<varlistentry>
+<term>Restrict access to cardholder data by business need to know</term>
+<listitem>
+<para>
+Access control is a complex topic if it comes to the operating system. Again,
+the PCI DSS requirement is quite fuzzy at this point and does not specifically
+state to which degree the restriction has to be fulfilled. SUSE Linux
+Enterprise comes with all general Linux tools to limit and restrict access to
+certain system areas and components. Access can be controlled via specific
+users and groups of users. This are the traditional Unix permission settings. A
+more flexible mechanism for file systems are Access Control Lists (ACLs) that
+offer a more graduated approach. SELinux can be used to separate the system to
+a maximum and to protect processes from gaining more resources and access then
+allowed.
+</para>
+<para>
+As stated before, SELinux and AppArmor are not inside the scope of this
+guide. However, to protect critical systems that could be potentially targeted
+it would be a good idea to look into the capabilities of these security
+mechanisms further. A documentation how to set up and manage SELinux can be
+found in chapter V inside the SUSE Linux Enterprise Server 12 SP1 Security
+Guide.</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Restrict access to privileged user IDs to least privileges necessary to
+perform job responsibilities</term>
+<listitem>
+<para>
+The standard UNIX permissions allow the setting of Read, Write and Execution
+flags for user and group IDs. A general group called “Others” or “World”
+defines the access for users that do not fit into the first two groups. This
+allows a straight forward way to gain or deny access to file system resources.
+</para>
+
+<para>
+ACLs allow an extra level of restriction. It is possible to set read-write
+access for one user ID and only read access to a second one. The same goes for
+group IDs. The command-line tools are included inside the acl package and allow
+direct modification of filesystem resources.
+</para>
+
+<screen>getfacl /tmp/test.txt
+	setfacl -m “u:dbuser:rw” /tmp/test.txt
+	getfacl /tmp/test.txt</screen>
+
+<para>
+Standard UNIX permissions come also with a so called StickyBit. This allows the
+execution of certain programs with higher privileges then the user who is
+executing those programs. The best example for this is the passwd tool that
+needs to modify the /etc/shadow in order to change the users password.</para>
+
+<para>In respect to the StickyBit Linux capabilities are also a way to
+explicitly allow certain operations or behaviors to binaries. An example for
+this is the ping command from the iputils package. It has no StickyBit but
+needs to be able to send ICMP IP packets over the network card. For this it has
+the CAP_NET_RAW capability that is Effective and Permitted (+ep).</para>
+
+<screen>getcap /usr/bin/ping
+	/usr/bin/ping = cap_net_raw+ep</screen>
+
+<para>
+Login access control to the system can be managed via the pluggable
+authentication module (PAM) mechanism. There are several modules directly
+available in SUSE Linux Enterprise that allow setups like control of the login
+time, multiple authentication mechanisms and central databases like NIS, LDAP
+or Active Directory.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Remove/disable inactive user accounts within 90 days</term>
+<listitem>
+<para>
+It should be common practice to use a centralized infrastructure for user
+accounts like NIS, LDAP or Active Directory. With this inactive accounts can
+easily identified and disabled automatically. A centralized infrastructure has
+also the advantage that a user account needs to be disabled in one place
+only. After access has been revoked a user is unable to perform any service
+that relies on the centralized account infrastructure.</para>
+
+<para>
+Local accounts on the other hand can be checked for inactivity during user
+login. This can be done with the pluggable authentication module (PAM)
+pam_lastlog. That module checks the last login time that was recorded in
+/var/log/lastlog and calculates the number of days since. By default access is
+denied when the inactivity reaches 90 days. To list the local accounts last
+login time use the lastlog command.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Limit repeated access attempts by locking out the user ID after not more
+than six attempts</term>
+<listitem>
+<para>
+As already stated for requirement 8.1.4 a centralized account infrastructure
+will have this capability. On the SUSE Linux Enterprise system we can check and
+limit access attempts with the pam_tally2 PAM module. The module is executed
+during login time and checks the recorded failed attempts since the last
+successful login. The pam_tally2 command-line tool can be used to check and
+reset the account status.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Set the lockout duration to a minimum of 30 minutes or until an
+administrator enables the user ID</term>
+<listitem>
+<para>
+The pam_tally2 PAM module that was described in requirement 8.1.6 can be used
+to lock an account for a given time after a failed login attempt. The parameter
+‘unlock_time=1800’ has to be configured into the PAM configuration. The default
+setting is that only the administrator can reactivate a locked account.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Incorporate multi-factor authentication for all non-console access into
+the CDE for personnel with administrative access</term>
+<listitem>
+<para>
+Multi-factor authentication for administrative access can be done via the
+pluggable authentication module (PAM) mechanism. This makes it flexible to add
+new methods to the authentication process and to adjust it if needed. Another
+way of multi-factor authentication for SSH connections is the additional usage
+of public keys. To connect to a system it is necessary to prove that you are in
+the possession of the appropriate private key. When accepted you need to enter
+a password at the second stage. With this brute force password crackers need to
+get there hands on a private key before they get a password prompt. Commercial
+one-time password (OTP) products usually have also a Linux PAM module available.
+</para>
+</listitem>
+</varlistentry>
+
+<varlistentry>
+<term>Incorporate multi-factor authentication for all remote network access
+(both user and administrator, and including third-party access for support or
+maintenance) originating from outside the entity’s network</term>
+<listitem>
+<para>
+See 8.3.1 for details
+</para>
+</listitem>
+</varlistentry>
 
 </sect1>
 </appendix>
