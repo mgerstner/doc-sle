@@ -292,7 +292,7 @@ server 2.europe.pool.ntp.org</screen>
     To synchronize time on multiple computers on the same network, we do not
     recommend to synchronize all of them with an external server. A good
     practice is to make one computer the time server which is synchronized with
-    an external time server, and the other computers act as clients of it. Add
+    an external time server, and the other computers act as its clients. Add
     a <literal>local</literal> directive to the server's
     <filename>/etc/chrony.conf</filename> to distinguish it from an
     authoritative time server:
@@ -330,64 +330,18 @@ server 2.europe.pool.ntp.org</screen>
 <!-- For reference see fate#306288 -->
 
   <para>
-   If the system boots without network connection,
-   <systemitem class="daemon">ntpd</systemitem> starts up, but it cannot
-   resolve DNS names of the time servers set in the configuration file. This
-   can happen if you use &nm; with an encrypted Wi-Fi.
+   If the system boots without network connection, &chronyd; starts up, but it
+   cannot resolve DNS names of the time servers set in the configuration file.
+   This can happen if you use &nm; with an encrypted Wi-Fi.
   </para>
 
   <para>
-   If you want <systemitem class="daemon">ntpd</systemitem> to resolve DNS
-   names at runtime, you must set the <systemitem>dynamic</systemitem> option.
-   When a network connection is established after booting,
-   <systemitem class="daemon">ntpd</systemitem> looks up the names again and
-   can reach the time servers to get the time.
+   &chronyd; keeps trying to resolve the time server names
+   specified by the <option>server</option>, <option>pool</option>, and
+   <option>peer</option> directives in an increasing time interval
+   until it succeeds.
   </para>
 
-  <para>
-   Manually edit <filename>/etc/ntp.conf</filename> and add
-   <systemitem>dynamic</systemitem> to one or more
-   <systemitem>server</systemitem> entries:
-  </para>
-
-<screen>server &ntpname; dynamic</screen>
-
-  <para>
-   Or use &yast; and proceed as follows:
-  </para>
-
-  <procedure>
-   <step>
-    <para>
-     In &yast; click <menuchoice> <guimenu>Network Services</guimenu>
-     <guimenu>NTP Configuration</guimenu> </menuchoice>.
-    </para>
-   </step>
-   <step>
-    <para>
-     Select the server you want to configure. Then click
-     <guimenu>Edit</guimenu>.
-    </para>
-   </step>
-   <step>
-    <para>
-     Activate the <guimenu>Options</guimenu> field and add
-     <literal>dynamic</literal>. Separate it with a space, if there are already
-     other options entered.
-    </para>
-   </step>
-   <step>
-    <para>
-     Click <guimenu>Ok</guimenu> to close the edit dialog. Repeat the previous
-     step to change all servers as wanted.
-    </para>
-   </step>
-   <step>
-    <para>
-     Finally click <guimenu>Ok</guimenu> to save the settings.
-    </para>
-   </step>
-  </procedure>
  </sect1>
 <!-- =============================================================== -->
 <!-- ==                                                           == -->
@@ -396,7 +350,7 @@ server 2.europe.pool.ntp.org</screen>
   <title>Setting Up a Local Reference Clock</title>
 
   <para>
-   The software package <systemitem class="daemon">ntpd</systemitem> contains
+   The software package &chrony; contains
    drivers for connecting local reference clocks. A list of supported clocks is
    available in the <systemitem class="resource">ntp-doc</systemitem> package
    in the file
@@ -409,14 +363,6 @@ server 2.europe.pool.ntp.org</screen>
    Here, <replaceable>T</replaceable> stands for the type of the clock and
    determines which driver is used and <replaceable>U</replaceable> for the
    unit, which determines the interface used.
-<!--
-   Refer to the above-mentioned file containing the list of reference clocks to
-   get the value for <option>t</option>.
-   <option>u</option> is the device number that is
-   only higher than <option>0</option> if you use several clocks of the same
-   type on the computer. For example, a <quote>Type 8 Generic Reference Driver
-    (PARSE)</quote> has the pseudo IP address <option>127.127.8.0</option>.
-   -->
   </para>
 
   <para>
