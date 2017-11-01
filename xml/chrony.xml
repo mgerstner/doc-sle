@@ -407,6 +407,11 @@ refclock SHM 1:perm=0644 refid GPS2</screen>
 refclock PHC /dev/ptp1:nocrossts poll 3 pps</screen>
    </listitem>
   </itemizedlist>
+
+  <para>
+   For more information on individual drivers' options, see <command>man 8
+   chrony.conf</command>.
+  </para>
  </sect1>
  <sect1 xml:id="sec.netz.xntp.etr" arch="zseries">
   <title>Clock Synchronization to an External Time Reference (ETR)</title>
