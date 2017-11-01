@@ -292,8 +292,8 @@ server 2.europe.pool.ntp.org</screen>
     To synchronize time on multiple computers on the same network, we do not
     recommend to synchronize all of them with an external server. A good
     practice is to make one computer the time server which is synchronized with
-    an external time server, and the other computers act as its clients. Add
-    a <literal>local</literal> directive to the server's
+    an external time server, and the other computers act as its clients. Add a
+    <literal>local</literal> directive to the server's
     <filename>/etc/chrony.conf</filename> to distinguish it from an
     authoritative time server:
    </para>
@@ -336,12 +336,32 @@ server 2.europe.pool.ntp.org</screen>
   </para>
 
   <para>
-   &chronyd; keeps trying to resolve the time server names
-   specified by the <option>server</option>, <option>pool</option>, and
-   <option>peer</option> directives in an increasing time interval
-   until it succeeds.
+   &chronyd; keeps trying to resolve the time server names specified by the
+   <option>server</option>, <option>pool</option>, and <option>peer</option>
+   directives in an increasing time interval until it succeeds.
   </para>
 
+  <para>
+   If the time server will not be reachable when &chronyd; is started, you can
+   specify the <option>offline</option> option:
+  </para>
+
+<screen>server <replaceable>server_address</replaceable> offline</screen>
+
+  <para>
+   &chronyd; will then not try to poll the server until it is enabled using the
+   following command:
+  </para>
+
+<screen>&prompt.root;chronyc online <replaceable>server_address</replaceable></screen>
+
+  <para>
+   When the <option>auto_offline</option> option is set, &chronyd; assumes that
+   the time server has gone off-line when 2 requests have been sent to it
+   without receiving a response. This option avoids the need to run the
+   'offline' command from <command>chronyc</command> when disconnecting the
+   network link.
+  </para>
  </sect1>
 <!-- =============================================================== -->
 <!-- ==                                                           == -->
@@ -350,45 +370,43 @@ server 2.europe.pool.ntp.org</screen>
   <title>Setting Up a Local Reference Clock</title>
 
   <para>
-   The software package &chrony; contains
-   drivers for connecting local reference clocks. A list of supported clocks is
-   available in the <systemitem class="resource">ntp-doc</systemitem> package
-   in the file
-   <filename>/usr/share/doc/packages/ntp-doc/refclock.html</filename>. Every
-   driver is associated with a number. In NTP, the actual configuration takes
-   place by means of pseudo IP addresses. The clocks are entered in the file
-   <filename>/etc/ntp.conf</filename> as though they existed in the network.
-   For this purpose, they are assigned special IP addresses in the form
-   <literal>127.127.<replaceable>T</replaceable>.<replaceable>U</replaceable></literal>.
-   Here, <replaceable>T</replaceable> stands for the type of the clock and
-   determines which driver is used and <replaceable>U</replaceable> for the
-   unit, which determines the interface used.
+   The software package &chrony; contains drivers for connecting local
+   reference clocks. Use the <option>refclock</option> directive in
+   <filename>/etc/chrony.conf</filename> to specify a hardware reference clock
+   to be used as a time source. It has two mandatory parameters; a driver name
+   and a driver-specific parameter. The two parameters are followed by zero or
+   more <option>refclock</option> options. &chronyd; includes the following
+   drivers:
   </para>
 
-  <para>
-   Normally, the individual drivers have special parameters that describe
-   configuration details. The file
-   <filename>/usr/share/doc/packages/ntp-doc/drivers/driver<replaceable>NN</replaceable>.html</filename>
-   (where <replaceable>NN</replaceable> is the number of the driver) provides
-   information about the particular type of clock. For example, the
-   <quote>type&nbsp;8</quote> clock (radio clock over serial interface)
-   requires an additional mode that specifies the clock more precisely. The
-   Conrad DCF77 receiver module, for example, has mode&nbsp;5. To use this
-   clock as a preferred reference, specify the keyword
-   <literal>prefer</literal>. The complete <literal>server</literal> line for a
-   Conrad DCF77 receiver module would be:
-  </para>
-
-<screen>server 127.127.8.0 mode 5 prefer</screen>
-
-  <para>
-   Other clocks follow the same pattern. Following the installation of the
-   <systemitem class="resource">ntp-doc</systemitem> package, the documentation
-   for NTP is available in the directory
-   <filename>/usr/share/doc/packages/ntp-doc</filename>. The file
-   <filename>/usr/share/doc/packages/ntp-doc/refclock.html</filename> provides
-   links to the driver pages describing the driver parameters.
-  </para>
+  <itemizedlist>
+   <listitem>
+    <para>
+     PPS - driver for the kernel 'pulse per second' API. For example:
+    </para>
+<screen>refclock PPS /dev/pps0 lock NMEA refid GPS</screen>
+   </listitem>
+   <listitem>
+    <para>
+     SHM - NTP shared memory driver. For example:
+    </para>
+<screen>refclock SHM 0 poll 3 refid GPS1
+refclock SHM 1:perm=0644 refid GPS2</screen>
+   </listitem>
+   <listitem>
+    <para>
+     SOCK - Unix domain socket driver. For example:
+    </para>
+<screen>refclock SOCK /var/run/chrony.ttyS0.sock</screen>
+   </listitem>
+   <listitem>
+    <para>
+     PHC - PTP hardware clock driver. For example:
+    </para>
+<screen>refclock PHC /dev/ptp0 poll 0 dpoll -2 offset -37
+refclock PHC /dev/ptp1:nocrossts poll 3 pps</screen>
+   </listitem>
+  </itemizedlist>
  </sect1>
  <sect1 xml:id="sec.netz.xntp.etr" arch="zseries">
   <title>Clock Synchronization to an External Time Reference (ETR)</title>
