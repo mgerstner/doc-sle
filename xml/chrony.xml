@@ -416,8 +416,9 @@ chronyc> activity
   <title>Setting Up a Local Reference Clock</title>
 
   <para>
-   The software package &chrony; contains drivers for connecting local
-   reference clocks. Use the <option>refclock</option> directive in
+   The software package &chrony; relies on other programs (such as
+   <systemitem>gpsd</systemitem>) to access the timing data via the SHM or SOCK
+   driver. Use the <option>refclock</option> directive in
    <filename>/etc/chrony.conf</filename> to specify a hardware reference clock
    to be used as a time source. It has two mandatory parameters; a driver name
    and a driver-specific parameter. The two parameters are followed by zero or
