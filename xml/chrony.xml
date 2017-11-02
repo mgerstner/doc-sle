@@ -42,9 +42,9 @@
  <para>
   Since &productname; 15, &chrony; is the default implementation of NTP.
   &chrony; includes two parts; &chronyd; is a daemon that can be started at
-  boot time and <command>chronyc</command> is a command line interface program
-  to monitor the performance of &chronyd;, and to change various operating
-  parameters at runtime.
+  boot time and &chronyc; is a command line interface program to monitor the
+  performance of &chronyd;, and to change various operating parameters at
+  runtime.
  </para>
  <note os="sled;osuse">
   <para>
@@ -321,9 +321,56 @@ server 2.europe.pool.ntp.org</screen>
 
 <screen>systemctl enable chronyd.service</screen>
  </sect1>
-<!-- =============================================================== -->
-<!-- ==                                                           == -->
-<!-- =============================================================== -->
+ <sect1 xml:id="ntp.chronyc">
+  <title>Configure &chronyd; at Runtime using &chronyc;</title>
+
+  <para>
+   You can use &chronyc; to change the behavior of &chronyd; at runtime. It
+   also generates status reports about the operation of &chronyd;.
+  </para>
+
+  <para>
+   You can run &chronyc; either in interactive a or non-interactive mode. To
+   run &chronyc; interactively, enter &chronyc; on the command line. It
+   displays a prompt and waits for your command input. For example, to check
+   how many NTP sources are online or offline, run:
+  </para>
+
+<screen>&prompt.root;&chronyc;
+chronyc> activity
+200 OK
+4 sources online
+2 sources offline
+1 sources doing burst (return to online)
+1 sources doing burst (return to offline)
+0 sources with unknown address</screen>
+
+  <para>
+   To exit &chronyc;'s prompt, enter <command>quit</command> or
+   <command>exit</command>.
+  </para>
+
+  <para>
+   If you do not need to use the interactive prompt, enter the command
+   directly:
+  </para>
+
+<screen>&prompt.root;&chronyc; activity</screen>
+
+  <note>
+   <title>Temporary Changes</title>
+   <para>
+    Changes made using &chronyc; are not permanent. They will be lost after the
+    next &chronyd; restart. For permanent changes, modify
+    <filename>/etc/chrony.conf</filename>.
+   </para>
+  </note>
+
+  <para>
+   For a complete list of &chronyc; commands, see its manual page (<command>man
+   1 chronyc</command>).
+  </para>
+ </sect1>
  <sect1 xml:id="sec.netz.xntp.dynamic">
   <title>Dynamic Time Synchronization at Runtime</title>
 
@@ -357,10 +404,9 @@ server 2.europe.pool.ntp.org</screen>
 
   <para>
    When the <option>auto_offline</option> option is set, &chronyd; assumes that
-   the time server has gone off-line when 2 requests have been sent to it
+   the time server has gone offline when 2 requests have been sent to it
    without receiving a response. This option avoids the need to run the
-   'offline' command from <command>chronyc</command> when disconnecting the
-   network link.
+   'offline' command from &chronyc; when disconnecting the network link.
   </para>
  </sect1>
 <!-- =============================================================== -->
