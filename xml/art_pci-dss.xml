@@ -13,7 +13,7 @@
   xmlns="http://docbook.org/ns/docbook"
   xmlns:xi="http://www.w3.org/2001/XInclude"
   xmlns:xlink="http://www.w3.org/1999/xlink">
- <title>Payment Card Industry Data Security Standard (PCI-DSS) Guide</title>
+ <title>&pcidss; (&pcidssa;) Guide</title>
  <info>
   <productnumber>&productnumber;</productnumber><productname>&productname;</productname><date>
   <?dbtimestamp format="B d, Y" ?></date>
@@ -25,49 +25,46 @@
    </para>
  </abstract>
  </info>
+ <para>
+  Any company that handles card payments from customers will need to
+  protect their data and keep it as safe and secure as possible. This is on
+  a mutual basis to protect customers and the business itself. For this it
+  is important to evaluate all aspects of the business environment that are
+  somehow involved in processing cardholder data. The Data helps to cover
+  all areas that are somehow part of the process and to implement security
+  relevant actions to keep the data, and the environment it relies on, save.
+ </para>
+ <para>
+  An essential part is the combination of actions. It is not only necessary
+  to configure a service secure, but it is also important that the
+  configuration is not changed afterward. If something got changed it is
+  important to keep track on who changed what at which point in time.
+ </para>
+ <para>
+  This SUSE security guide should give you a basic understanding of how
+  SUSE Linux Enterprise can be configured to comply with the &pcidss;.
+ </para>
+ <para>
+  Again, it is most important to understand that protecting the systems does
+  not end by the configuration. It is the whole environment and people
+  involved that needs to be taken into account.
+ </para>
  <sect1>
-  <title>Introduction</title>
+  <title>What is &pcidssa;?</title>
   <para>
-   Any company that handles card payments from customers will need to
-   protect their data and keep it as safe and secure as possible. This is on
-   a mutual basis to protect customers and the business itself. For this it
-   is important to evaluate all aspects of the business environment that are
-   somehow involved in processing cardholder data. The Data helps to cover
-   all areas that are somehow part of the process and to implement security
-   relevant actions to keep the data, and the environment it relies on, save.
-  </para>
-  <para>
-   An essential part is the combination of actions. It is not only necessary
-   to configure a service secure, but it is also important that the
-   configuration is not changed afterwards. If something got changed it is
-   important to keep track on who changed what at which point in time.
-  </para>
-  <para>
-   This SUSE security guide should give you a basic understanding of how
-   SUSE Linux Enterprise can be configured to comply with the PCI Data
-   Security Standard.
-  </para>
-  <para>
-   Again, it is most important to understand that protecting the systems does
-   not end by the configuration. It is the whole environment and people
-   involved that needs to be taken into account.
-  </para>
- </sect1>
- <sect1>
-  <title>What is PCI DSS?</title>
-  <para>
-   The Payment Card Industry Data Security Standard (PCI DSS) is a set of
+   The &pcidss; (&pcidssa;) is a set of
    requirements to guide a merchant to protect credit cardholder data. The
    standard covers 6 main categories with currently 12 requirement topics
    how to implement, protect, maintain and monitor systems that are involved
    with credit cardholder data processing.
   </para>
   <para>
-   PCI DSS was created and is maintained by the PCI Security Standards
+   &pcidssa; was created and is maintained by the PCI Security Standards
    Council (SSC) that was founded by all five major credit card brands Visa,
-   MasterCard, American Express, Discover, and JCB. In December 2004 PCI DSS
+   MasterCard, American Express, Discover, and JCB. In December 2004, &pcidssa;
    1.0 was released to address the growing thread of online credit card
-   fraud. Currently version 3.2 is available since April 2016.
+   fraud. The current version, &pcidssa; version 3.2 has been available since
+   April 2016.
   </para>
   <!-- FIXME: The requirements need to have consistent numbering instead of
   starting from 1 each time. -->
@@ -183,15 +180,16 @@
    help to ensure the security of all areas involved with cardholder data.
    The technical aspects are usually specified kind of fuzzy. This leads to
    a situation where it is up to the auditor to decide which security
-   setting is valid for a requirement and which is not. So the described
-   recommendations in this guide are just a starting point to fulfill the
-   PCI DSS and are objects of discussion.
+   setting is valid for a requirement and which is not. Therefore, the
+   recommendations in this guide are a starting point to fulfill the
+   &pcidssa; and are objects of discussion.
+   <!-- FIXME: objects of discussion wording? -->
   </para>
  </sect1>
  <sect1>
   <title>Areas Relevant to the Operating System</title>
   <para>
-   As the PCI DSS covers the complete picture of every aspect involved with
+   As the &pcidssa; covers the complete picture of every aspect involved with
    credit cardholder data, not all requirements are directly operating
    system (OS) relevant. For instance the running application processing the
    data and the database design are not directly inside the scope of the OS
@@ -227,7 +225,7 @@
      come with a host firewall based on iptables. The system can be easily
      configured to allow only connections on certain inbound ports. With the
      YaST firewall module it is also possible to define more complex rules,
-     for instance that connections are only possible from certain network
+     for example, that connections are only possible from certain network
      addresses. With this the local system firewall should be part of the
      overall firewall design to tighten network security to a maximum.
     </para>
@@ -258,16 +256,16 @@
        <para>
         Inbound traffic filtering rules can be directly defined via the YaST
         firewall module. Systems with multiple interfaces can be configured
-        in such a way that for example the ssh daemon is only reachable on
+        in such a way that, for example, the SSH daemon is only reachable on
         the administration interface and not on the general network card.
         Furthermore is possible to define the source addresses that a service
         allows traffic from.
         </para>
         <para>
          Usually all outbound system traffic is generally allowed with the
-         SuSEfirewall2 script. Therefore outbound rules need to be defined
-         manually inside the SuSEfirewall2-custom script. The activation of
-         the custom script has to be done inside the general SuSEfirewall
+         &susefirewall; script. Therefore outbound rules need to be defined
+         manually inside the &susefirewall; custom script. The activation of
+         the custom script needs to be done inside the general &susefirewall;
          configuration file
          <filename>/etc/sysconfig/SuSEfirewall2</filename> by uncommenting
          the <literal>FW_CUSTOMRULES</literal> line.
@@ -281,28 +279,29 @@
         </para>
         <para>
          The following example would only allow outbound DNS requests over
-         interface eth0 to server 10.0.0.4.:
+         interface <systemitem>eth0</systemitem> to server
+         <systemitem class="ipaddress">10.0.0.4</systemitem>:
         </para>
         <screen>iptables -A OUTPUT -d 10.0.0.4/32 -o eth0 -p udp -m udp --dport 53 -j ACCEPT</screen>
         <para>
-         Please check the <literal>deny all</literal> OUTPUT rule described
-         in requirement 1.2.1.c.
+         Also see the <literal>deny all OUTPUT</literal> rule described
+         in <xref linkend="vle.pcidss.deny-all"/>.
         </para>
       </listitem>
      </varlistentry>
-     <varlistentry>
+     <varlistentry xml:id="vle.pcidss.deny-all">
       <term>1.2.1.c Examine firewall and router configurations to verify that all other inbound and outbound traffic is specifically denied, for example by using an explicit <quote>deny all</quote> or an implicit deny after allow statement.</term>
       <listitem>
        <para>
         The "deny all" rules of other inbound and outbound traffic can easily
         be achieved with iptables. The INPUT and FORWARD table policies are
-        directly set by the SuSEfirewall2 script so that all unwanted traffic
+        directly set by the &susefirewall; script so that all unwanted traffic
         gets dropped. (Forwarding is usually completely disabled by a kernel
-        parameter and shouldn't be enabled for endpoint servers.)
+        parameter and should not be enabled for endpoint servers.)
        </para>
        <para>
-        As mentioned before the OUTPUT policy has to be defined manually
-        inside the SuSEfirewall2-custom script because in general all
+        As mentioned before the OUTPUT policy needs to be defined manually
+        inside the &susefirewall;-custom script because in general all
         outgoing traffic is allowed. The following two rules need to be added
         to the fw_custom_after_chain_creation() function so that only
         outbound traffic that is related to an established inbound connection
@@ -338,10 +337,11 @@
        <para>
         The second way is provided via the Linux kernel reverse path
         filtering. The basic concept of this feature is that if a packet
-        reply wouldn’t go out through the same interface the initial packet
+        reply would not go out through the same interface the initial packet
         got in, it is treated as a bogus packet and is dropped. This feature
         is enabled by default in SUSE Linux Enterprise and can be check with
-        the following command. This should give back a ‘1’ when it is enabled.
+        the following command. This should give back a
+        <literal>1</literal> when it is enabled.
        </para>
        <screen>cat /proc/sys/net/ipv4/conf/all/rp_filter</screen>
       </listitem>
@@ -350,14 +350,14 @@
       <term>1.3.5 Permit only “established” connections into the network.</term>
       <listitem>
        <para>
-        The SuSEfirewall2 directly enables connection tracking via iptables.
-        Connections to an interface that has been marked as external are
+        The &susefirewall; directly enables connection tracking via iptables.
+        Connections to an interface that needs been marked as external are
         dropped by default. Only connections that associated with an
         established connection are allowed.
        </para>
        <para>
         It is possible to define certain services that are allowed to connect
-        to the external interface. However, this has to be in compliance with
+        to the external interface. However, this needs to be in compliance with
         the general security policy.
        </para>
        <para>
@@ -398,7 +398,7 @@
      configuration comes already with customer defined security options.
     </para>
     <para>
-     This is also stated inside the SUSE Linux Enterprise Server Security and
+     This is also stated inside the &productname; Security and
      Hardening Guide[1], that should be a general resource to tighten security
      further. This helps to meet the requirements in this section.
     </para>
@@ -407,7 +407,7 @@
       <term>2.1 Always change vendor-supplied defaults and remove or disable unnecessary default accounts before installing a system on the network.</term>
       <listitem>
        <para>
-        The configuration of any system service has to be evaluated to meet
+        The configuration of any system service needs to be evaluated to meet
         the needed security standards. This goes from limiting the used
         protocols to only allow currently secure versions and to disable
         legacy implementations, to the definition of access controls and
@@ -431,7 +431,7 @@
        <para>
         Default settings can also be customized during automated system
         installation via an AutoYaST profile. This makes it easy to roll out
-        new instances of SUSE Linux Enterprise Server and directly enable an
+        new instances of &productname; and directly enable an
         evaluated configuration. The whole setup procedure can even be
         completely automated with the SUSE Manager[2].
        </para>
@@ -452,7 +452,7 @@
       <term>2.2 Develop configuration standards for all system components. Assure that these standards address all known security vulnerabilities and are consistent with industry-accepted system hardening standards.</term>
       <listitem>
        <para>
-        As mentioned inside the PCI DSS document, possible sources for
+        As mentioned inside the &pcidssa; document, possible sources for
         industry-accepted hardening standards are:
        </para>
        <orderedlist>
@@ -470,7 +470,7 @@
         </listitem>
        </orderedlist>
        <para>
-        In general, as the PCI DSS requirements are quite fuzzy, there is no
+        In general, as the &pcidssa; requirements are quite fuzzy, there is no
         direct mapping of hardening standards to specific requirements.
         However, any hardening resource, including the SLES Security and
         Hardening Guide[1], help to fulfill this specifications.
@@ -481,7 +481,7 @@
       <term>2.2.1 Implement only one primary function per server to prevent functions that require different security levels from co-existing on the same server. (For example, web servers, database servers, and DNS should be implemented on separate servers.)</term>
       <listitem>
        <para>
-        With SUSE Linux Enterprise Server it is easily possible to separate
+        With &productname; it is easily possible to separate
         services by using virtualization. SLES12 SP1 comes with the
         virtualization methods KVM, Xen, Linux Containers and Docker to
         isolate services. This makes it easy to fulfill the requirement and
@@ -531,11 +531,11 @@
         and that this is just a workaround.
        </para>
        <para>
-        Additional security within SUSE Linux Enterprise Server can also be
-        provided with the usage of SELinux or AppArmor. At this stage the
+        Additional security within &productname; can also be
+        provided with the usage of &selnx; or &aa;. At this stage the
         setup of these methods is beyond the scope of this document. A good
-        starting point to get familiar with the SELinux framework is main
-        chapter V of the SUSE Linux Enterprise Server 12 SP1 Security Guide.
+        starting point to get familiar with the &selnx; framework is main
+        chapter V of the &productname; 12 SP1 Security Guide.
        </para>
       </listitem>
      </varlistentry>
@@ -554,7 +554,7 @@
        </para>
        <para>
         A simple way to block modules from being loaded is the configuration
-        via the /etc/modprobe.d directory. For instance, if we would like to
+        via the /etc/modprobe.d directory. For example, if we would like to
         prevent the kernel module 'floppy' from being loaded, as systems these
         days have usually no floppy drive anymore, we create the following
         configuration file.
@@ -566,7 +566,7 @@
        <para>
         Please be aware that the floppy module is usually loaded during the
         execution of the initial ram disk. Therefore it is necessary to
-        propagate such a configuration change to the initrd file. This has to
+        propagate such a configuration change to the initrd file. This needs to
         be done via the ''mkinitrd'' script.
        </para>
        <screen>mkinitrd</screen>
@@ -574,7 +574,7 @@
         It is not that easy to do the same with application functionality.
         Usually the functionality is compiled into the binaries itself or be
         part of a library, which makes it impossible to being removed
-        explicitly. Furthermore it has to be clear that removed files that
+        explicitly. Furthermore it needs to be clear that removed files that
         where part of an RPM package are reinstalled when a package update is
         published.
        </para>
@@ -584,13 +584,16 @@
       <term>2.3 Encrypt all non-console administrative access using strong cryptography. Use technologies such as SSH, VPN, or TLS for web-based management and other non-console administrative access.</term>
       <listitem>
        <para>
-        It is quite straightforward to fulfill this requirement. Any
-        administrative network access needs to be encrypted. The first tool of
+        Following this requirement is straightforward: Encrypt all
+        administrative network access.
+       </para>
+       <para>
+        The first tool of
         choice here is SSH with appropriate configuration settings that fit
         into the security concept. Administrative access can also be granted
         via a website. In this case the complete connection chain between the
         browser and the server system needs to be encrypted. This is done via
-        TLS and x509 certificates.
+        TLS and X.509 certificates.
        </para>
       </listitem>
      </varlistentry>
@@ -620,7 +623,7 @@
      different ways. The DBMS can directly use column-level encryption inside
      the database scheme or the used files can be encrypted. The easiest way
      with SLES is to use full disk encryption so that the whole database
-     storage is always encrypted. It has to be clear that access to the
+     storage is always encrypted. It needs to be clear that access to the
      encrypted block device is the same as to a non encrypted disk. This is
      discussed in 3.4.1 in more detail.
     </para>
@@ -629,7 +632,7 @@
       <term>3.4.1.a If disk encryption is used, inspect the configuration and observe the authentication process to verify that logical access to encrypted file systems is implemented via a mechanism that is separate from the native operating system's authentication mechanism (for example, not using local user account databases or general network login credentials).</term>
       <listitem>
        <para>
-        The guidance description of the PCI DSS document says the following
+        The guidance description of the &pcidssa; document says the following
         about this requirement: <quote>Full disk encryption helps to protect
         data in the event of physical loss of a disk and therefore may be
         appropriate for portable devices that store cardholder data.</quote>
@@ -666,7 +669,7 @@
    <sect3>
     <title>Requirement 4: Encrypt Transmission of Cardholder Data Across Open, Public Networks</title>
     <para>
-     Cardholder data has to be encrypted during transmissions over insecure
+     Cardholder data needs to be encrypted during transmissions over insecure
      networks. Best practice would be to try to encrypt all traffic,
      externally and internally, to make it as hard as possible for malicious
      individuals to gain inside information and possible privileged access to
@@ -678,7 +681,7 @@
       <term>4.1 Use strong cryptography and security protocols (for example, TLS, IPSEC, SSH, etc.) to safeguard sensitive cardholder data during transmission over open, public networks, including the following: Only trusted keys and certificates are accepted, The protocol in use only supports secure versions or configurations, The encryption strength is appropriate for the encryption methodology in use.</term>
       <listitem>
        <para>
-        Every connection that transmits sensitive information has to be
+        Every connection that transmits sensitive information needs to be
         protected against eavesdropping and tampering.
        </para>
        <para>
@@ -723,7 +726,7 @@
    <sect3>
     <title>Requirement 5: Protect All Systems Against Malware and Regularly Update Anti-Virus Software or Programs</title>
     <para>
-     For PCI DSS compliance it is necessary to protect against malicious
+     For &pcidssa; compliance it is necessary to protect against malicious
      software threats. Commercial anti-virus software is available from the
      major anti-virus software vendors and can be integrated into the Linux
      environment. SLES itself comes with the open source anti-virus engine
@@ -829,8 +832,8 @@
     <para>Summary:</para>
     <para>
      Access control is a complex topic if it comes to the operating system.
-     Again, the PCI DSS requirement is quite fuzzy at this point and does not
-     specifically state to which degree the restriction has to be fulfilled.
+     Again, the &pcidssa; requirement is quite fuzzy at this point and does not
+     specifically state to which degree the restriction needs to be fulfilled.
      SUSE Linux Enterprise comes with all general Linux tools to limit and
      restrict access to certain system areas and components.
     </para>
@@ -838,16 +841,16 @@
      Access can be controlled via specific users and groups of users. This
      are the traditional Unix permission settings. A more flexible mechanism
      for file systems are Access Control Lists (ACLs) that offer a more
-     graduated approach. SELinux can be used to separate the system to a
+     graduated approach. &selnx; can be used to separate the system to a
      maximum and to protect processes from gaining more resources and access
      then allowed.
     </para>
     <para>
-     As stated before, SELinux and AppArmor are not inside the scope of this
+     As stated before, &selnx; and &aa; are not inside the scope of this
      guide. However, to protect critical systems that could be potentially
      targeted it would be a good idea to look into the capabilities of these
      security mechanisms further. A documentation how to set up and manage
-     SELinux can be found in chapter V inside the SUSE Linux Enterprise
+     &selnx; can be found in chapter V inside the SUSE Linux Enterprise
      Server 12 SP1 Security Guide.
     </para>
     <variablelist>
@@ -881,9 +884,9 @@
        <para>
         In respect to the StickyBit Linux capabilities are also a way to
         explicitly allow certain operations or behaviors to binaries. An
-        example for this is the ping command from the iputils package. It has
+        example for this is the ping command from the iputils package. It needs
         no StickyBit but needs to be able to send ICMP IP packets over the
-        network card. For this it has the CAP_NET_RAW capability that is
+        network card. For this it needs the CAP_NET_RAW capability that is
         Effective and Permitted (+ep).
        </para>
        <screen>getcap /usr/bin/ping</screen>
@@ -922,8 +925,8 @@
        It should be common practice to use a centralized infrastructure for
        user accounts like NIS, LDAP or Active Directory. With this inactive
        accounts can easily identified and disabled automatically. A
-       centralized infrastructure has also the advantage that a user account
-       needs to be disabled in one place only. After access has been revoked
+       centralized infrastructure needs also the advantage that a user account
+       needs to be disabled in one place only. After access needs been revoked
        a user is unable to perform any service that relies on the centralized
        account infrastructure.
       </para>
@@ -959,7 +962,7 @@
       <para>
        The pam_tally2 PAM module that was described in requirement 8.1.6 can
        be used to lock an account for a given time after a failed login
-       attempt. The parameter ‘unlock_time=1800’ has to be configured into
+       attempt. The parameter ‘unlock_time=1800’ needs to be configured into
        the PAM configuration. The default setting is that only the
        administrator can reactivate a locked account.
        </para>
@@ -1033,7 +1036,7 @@
     <title>Requirement 11: Regularly Test Security Systems and Processes</title>
     <para>
      Testing the discussed security mechanisms is also a key requirement for
-     PCI DSS. Evaluating the configurations and testing logging mechanisms
+     &pcidssa;. Evaluating the configurations and testing logging mechanisms
      can protect against know security risks and ensure that essential
      information are available to identify possible security breaches.
      Testing capabilities should be already considered during system design.
@@ -1072,7 +1075,7 @@
     The following abbreviations where used in this document.
    </para>
     <informaltable>
-      <tgroup cols="2"><tbody><row><entry><para>PCI DSS</para></entry><entry><para>Payment Card Industry Data Security Standard</para></entry></row><row><entry><para>CDE</para></entry><entry><para>Cardholder Data Environment</para></entry></row><row><entry><para>OTP</para></entry><entry><para>One Time Password</para></entry></row><row><entry><para>SSC</para></entry><entry><para>Security Standards Council</para></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row></tbody></tgroup>
+      <tgroup cols="2"><tbody><row><entry><para>&pcidssa;</para></entry><entry><para>&pcidss;</para></entry></row><row><entry><para>CDE</para></entry><entry><para>Cardholder Data Environment</para></entry></row><row><entry><para>OTP</para></entry><entry><para>One Time Password</para></entry></row><row><entry><para>SSC</para></entry><entry><para>Security Standards Council</para></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row><row><entry><para/></entry><entry><para/></entry></row></tbody></tgroup>
     </informaltable>
     <para/>
   </sect1>
