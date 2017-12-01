@@ -201,7 +201,7 @@
 <!ENTITY obs           "Open Build Service">
 <!ENTITY obsa          "OBS">
 <!ENTITY oes           "Open Enterprise Server">
-<!ENTITY rhel          "RedHat Enterprise Linux">
+<!ENTITY rhel          "Red Hat Enterprise Linux">
 <!ENTITY hageo         "GEO Clustering for &sle; &hasi;">
 <!ENTITY kg            "kGraft">
 <!ENTITY ad            "Active Directory">
@@ -229,10 +229,14 @@
 <!ENTITY smtool        "Subscription Management Tool">
 <!ENTITY smt           "SMT">
 <!ENTITY lxc           "LXC">
+<!ENTITY docker        "Docker">
 <!ENTITY xen           "Xen">
 <!ENTITY xenreg        "Xen&reg;">
 <!ENTITY kvm           "KVM">
 <!ENTITY vmware        "VMware">
+<!ENTITY esx           "&vmware; ESX">
+<!ENTITY ms            "Microsoft">
+<!ENTITY hyperv        "&ms; Hyper-V">
 <!ENTITY vmhost        "VM Host Server">
 <!ENTITY vmguest       "VM Guest">
 <!ENTITY dom0          "Dom0">
@@ -269,6 +273,7 @@
 <!ENTITY cpufreq       "CPUfreq">
 <!ENTITY powertop      "powerTOP">
 <!ENTITY gpg           "GPG"> <!-- or GnuGP -->
+<!ENTITY clamav        "ClamAV">
 <!-- oddities -->
 <!ENTITY thrdmrk       "*">
 <!ENTITY kexec          "Kexec">
