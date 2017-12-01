@@ -482,7 +482,7 @@ tcp_client_max_idle = 0</screen>
    5:30 pm on the current day and converts numeric entries to text.
   </para>
 
-<screen><command>aureport</command> <option>-ts 8:00 -te 17:30 -f -i</option></screen>
+<screen>&prompt.user;sudo <command>aureport</command> <option>-ts 8:00 -te 17:30 -f -i</option></screen>
  </sect1>
  <sect1 xml:id="sec.audit.qs.logs">
   <title>Analyzing Audit Log Files and Reports</title>
@@ -585,7 +585,7 @@ tcp_client_max_idle = 0</screen>
    5:30 pm on the current day and converts numeric entries to text.
   </para>
 
-<screen><command>ausearch</command> <option>-ts 8:00 -te 17:30 -f audit.log -i</option></screen>
+<screen>&prompt.user;sudo <command>ausearch</command> <option>-ts 8:00 -te 17:30 -f audit.log -i</option></screen>
  </sect1>
  <sect1 xml:id="sec.audit.qs.trace">
   <title>Analyzing Individual System Calls</title>
@@ -605,7 +605,7 @@ tcp_client_max_idle = 0</screen>
    <command>auditctl</command> <option>-D</option> command.
   </para>
 
-<screen>autrace /usr/bin/less /etc/sysconfig/auditd
+<screen>&prompt.user;sudo autrace /usr/bin/less /etc/sysconfig/auditd
 
 Waiting to execute: /usr/bin/less
 Cleaning up...
