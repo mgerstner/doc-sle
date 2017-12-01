@@ -41,7 +41,7 @@
   important to keep track on who changed what at which point in time.
  </para>
  <para>
-  This SUSE security guide should give you a basic understanding of how
+  This document should give you a basic understanding of how
   &productname; can be configured to comply with the &pcidss;.
  </para>
  <para>
@@ -196,7 +196,7 @@
    security. Also formal processes that need to be implemented are not
    directly connected to the OS level. In detail we have the chapter 9
    (restrict physical access) and chapter 12 (maintain a policy) that are
-   not discussed by this guide.
+   not discussed by this document.
   </para>
   <para>
    Relevant are areas where the OS can be configured to enforce the policies
@@ -414,9 +414,9 @@
      configuration comes already with customer-defined security options.
     </para>
     <para>
-     This is also stated inside the &productname; Security and
-     Hardening Guide[1]<!--fixref-->, that should be a general resource to tighten security
-     further. This helps to meet the requirements in this section.
+     As general resource to tighten security further, see
+     <xref linkend="book.security"/> and <xref linkend="book.hardening"/>.
+     <!-- FIXME: These guides may become one soon. - sknorr, 2017-12-01 -->
     </para>
     <variablelist>
      <varlistentry>
@@ -430,6 +430,7 @@
         authentication. &productname; predefined settings are already
         security aware, but settings can be tightened ever further.
        </para>
+       <!-- ul -->
        <para>
         For example, this is the case with the SNMP daemon where by default
         incoming requests are only allowed to localhost. The default community
@@ -446,11 +447,13 @@
         <literal>PermitRootLogin</literal> to <literal>no</literal>.
        </para>
        <para>
-        Default settings can also be customized during automated system
+        Default settings can  be customized during automated system
         installation via an &ay; profile. This makes it easy to roll out
         new instances of &productname; and directly enable an
-        evaluated configuration. The whole setup procedure can even be
-        completely automated with the SUSE Manager[2]<!--fixref-->.
+        evaluated configuration. This setup procedure can also be
+        automated with the &susemgr;. For more information, see the &susemgr;
+        documentation at
+        <link xlink:href="https://www.suse.com/documentation/suse-manager"/>.
        </para>
        <para>
         &productname; does not install additional default accounts apart of
@@ -490,8 +493,10 @@
        <para>
         In general, as the &pcidssa; requirements are quite fuzzy, there is no
         direct mapping of hardening standards to specific requirements.
-        However, any hardening resource, including the &productname; Security and
-        Hardening Guide[1]<!--fixref-->, help to fulfill these specifications.
+        However, other hardening resources will also help fulfill these
+        specifications, including <xref linkend="book.security"/> and
+        <xref linkend="book.hardening"/>.
+        <!-- FIXME: These guides may become one soon. - sknorr, 2017-12-01 -->
        </para>
       </listitem>
      </varlistentry>
@@ -550,8 +555,9 @@
        <para>
         Additional security within &productname; can also be
         provided with the usage of &selnx; or &aa;. At this stage the
-        setup of these methods is beyond the scope of this document. For information about &selnx; framework, see
-        chapter V of the &productname; 12 SP1 Security Guide. <!-- fixref -->
+        setup of these methods is beyond the scope of this document. For
+        information about &selnx; framework, see
+        <xref linkend="cha.selinux"/>.
        </para>
       </listitem>
      </varlistentry>
@@ -865,10 +871,10 @@
     </para>
     <para>
      As stated before, &selnx; and &aa; are not inside the scope of this
-     guide. However, to protect critical systems that could be potentially
+     document. However, to protect critical systems that could be potentially
      targeted it would be a good idea to look into the capabilities of these
-     security mechanisms further. A documentation how to set up and manage
-     &selnx; can be found in chapter V inside the &productname; Server 12 SP1 Security Guide<!-- fixref -->.
+     security mechanisms further. For more information about &selnx;, see
+     <xref linkend="cha.selinux"/>.
     </para>
     <variablelist>
      <varlistentry>
@@ -1062,10 +1068,10 @@
      by the daemon <systemitem class="daemon">audit</systemitem>.
     </para>
     <para>
-     For information about auditing, see chapter VI “The Linux Audit Framework” inside the
-     SUSE Linux Enterprise Server 12 SP1 Security Guide<!-- fixref -->. All subsections inside
-     this requirement relevant to auditing can be fulfilled by defining
-     appropriate auditing rules that can be saved inside a central storage.
+     For information about auditing, see <xref linkend="part.audit"/>. All
+     subsections inside this requirement relevant to auditing can be
+     fulfilled by defining appropriate auditing rules that can be saved
+     inside a central storage.
     </para>
    </sect3>
    <sect3>
