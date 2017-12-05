@@ -64,7 +64,6 @@
   </para>
 
   <sect2 xml:id="sec.net.ntp.yast.basic">
-<!-- 2017-10-23 tbazant: check yast for GUI changes -->
    <title>Basic Configuration</title>
    <para>
     The &yast; NTP client configuration (<menuchoice><guimenu>Network
@@ -155,7 +154,6 @@
        <guimenu>Options</guimenu> allows you to specify additional options for
        &chronyd;.
       </para>
-<!-- check this vvvvvvvvvvv -->
       <para>
        Using <guimenu>Access Control Options</guimenu>, you can restrict the
        actions that the remote computer can perform with the daemon running on
