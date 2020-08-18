@@ -3494,6 +3494,162 @@ Account Expires: Never</screen>
    </para>
   </sect1>
   <xi:include href="hardening_pam_stack.xml"/>
+  <sect1 xml:id="sec.sec_prot.restrict_root">
+   <title>Restricting <literal>root</literal> logins</title>
+
+   <para>
+    By default the <literal>root</literal> user is assigned a password
+    and can login on any local terminal, in a graphical session or via SSH.
+    For security sensitive systems <literal>root</literal> logins should be
+    restricted to as few methods as possible. Shared usage of the root account
+    should be avoided, instead individual administrators should use tools like
+    <literal>su(1)</literal> or <literal>sudo(8)</literal> to elevate privileges.
+    This allows to associate <literal>root</literal> logins with particular users.
+    This also adds another layer of security, because not only the root password
+    but also the password of an administrator's account needs to be compromised
+    to gain full root access. This section explains how to limit direct root
+    logins on the different levels of the system.
+   </para>
+   <sect2 xml:id="sec.sec_prot.restrict_root.tty">
+    <title>Restricting Local Text Console Logins</title>
+
+    <para>
+     TTY devices provide text mode system access via the console. For desktop
+     systems these are accessed via the local keyboard or in case of server
+     systems via input devices connected to a KVM switch or a remote
+     management card (ILO, DRAC, etc).
+     By default, Linux offers 6 different consoles, that can be switched to
+     via the key-combinations Alt+F1 - Alt+F6, when running in text mode, or
+     Ctrl+Alt+F1 - Ctrl+Alt+F6 when running in a graphical session. The
+     associated terminal devices are named <literal>tty1</literal> ..
+     <literal>tty6</literal> accordingly.
+    </para>
+
+    <para>
+     The following steps restrict root access to the first TTY. Even this
+     access method is only meant for emergency access to the system and should
+     never be used for everyday system administration tasks.
+    </para>
+
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+     <para>
+      Ensure that the PAM stack configuration file <literal>/etc/pam.d/login</literal>
+      contains the <literal>pam_securetty</literal> module in the <literal>auth</literal> block:
+     </para>
+     <screen>auth     requisite      pam_nologin.so
+auth     [user_unknown=ignore success=ok ignore=ignore auth_err=die default=bad] pam_securetty.so noconsole
+auth     include        common-auth</screen>
+     </listitem>
+     <listitem>
+      <para>
+       This will include the <literal>pam_securetty</literal> PAM module during the
+       authentication process on local consoles to allow root only to login on
+       tty devices that are listed in the file <literal>/etc/securetty</literal>.
+       Thus to actually limit the tty devices for root you need to remove all
+       entries from this file except one:
+      </para>
+     <screen>#
+# This file contains the device names of tty lines (one per line,
+# without leading /dev/) on which root is allowed to login.
+#
+tty1</screen>
+     </listitem>
+     <listitem>
+      <para>
+       After these changes root logins from non-allowed terminals will be
+       rejected right away without even querying the root password.
+      </para>
+     </listitem>
+    </itemizedlist>
+
+    <important>
+     <para>
+      These configuration changes will also cause root logins on serial
+      consoles like <literal>/dev/ttyS0</literal> to be denied. In case you
+      require such use cases you need to list the respective tty devices
+      additionally in the <literal>/etc/securetty</literal> file.
+     </para>
+    </important>
+
+    <note>
+     <para>
+      The steps shown here are tailored towards PC architectures (&x86; and
+      &x86-64;). On architectures like &power; different terminal
+      device names than <literal>tty1</literal> may be used. Be careful not to
+      lock yourself out completely by specifying wrong terminal device names.
+      You can determine the device name of the terminal you are currently
+      logged into by running the <literal>tty</literal> command.
+     </para>
+    </note>
+   </sect2>
+
+   <sect2 xml:id="sec.sec_prot.retrict_root.graphical">
+    <title>Restricting Graphical Session Logins</title>
+
+    <para>
+     On security sensitive systems like servers it is best not to run a
+     graphical user environment at all. If you require a graphical login
+     anyways then it is even more so important that the <literal>root</literal>
+     user cannot login in a graphical session. Graphical programs are often
+     not designed to be run as <literal>root</literal> and are more likely to
+     contain security issues than console programs.
+    </para>
+
+    <para>
+     To deny the <literal>root</literal> user login to graphical sessions you
+     can apply the same basic steps as outlined in
+     <xref linkend="sec.sec_prot.restrict_root.tty"/>.
+     You only need to also add the <literal>pam_securetty</literal> module to
+     the PAM stack file belonging to the display manager, for example
+     <literal>/etc/pam.d/gdm</literal> for GDM. The graphical session also
+     runs on a TTY device, <literal>tty7</literal>, by default. Therefore,
+     when you restrict <literal>root</literal> logins to
+     <literal>tty1</literal>, then a <literal>root</literal> login in the
+     graphical session will be denied.
+    </para>
+
+    <important>
+     <para>
+      One might be tempted to add the <literal>pam_securetty</literal> PAM
+      module to the <literal>/etc/pam.d/common-auth</literal> file to make it
+      effective for all PAM services. This would break <literal>su</literal>
+      and <literal>sudo</literal>, however, because these tools would then
+      also reject root authentications.
+     </para>
+    </important>
+   </sect2>
+
+   <sect2 xml:id="sec.sec_prot.restrict_root.ssh">
+    <title>Restricting SSH Logins</title>
+    <para>
+     By default the <literal>root</literal> user is also allowed to login
+     into a machine remotely via the SSH network protocol (if the SSH port is
+     not blocked by the firewall). To restrict this possibility the following
+     change of the OpenSSH configuration needs to be performed:
+    </para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Edit <literal>/etc/ssh/sshd_config</literal> and adjust the following parameter:</para>
+      <screen>PermitRootLogin no</screen>
+     </listitem>
+     <listitem>
+      <para>Restart the <literal>sshd</literal> service to make the changes effective:</para>
+      <screen>systemctl restart sshd.service</screen>
+     </listitem>
+    </itemizedlist>
+    <note>
+     <para>
+      Using the PAM module <literal>pam_securetty</literal> is not suitable in
+      case of OpenSSH, because SSH logins not necessarily go through the PAM
+      stack (e.g. when using SSH public key authentication). Also an attacker
+      could be able to differentiate between a wrong password and a successful
+      login that was only rejected later on by policy.
+     </para>
+    </note>
+   </sect2>
+
+  </sect1>
   <sect1 xml:id="sec.sec_prot.dos">
    <title>Preventing Accidental Denial of Service</title>
 
