@@ -3650,6 +3650,141 @@ tty1</screen>
    </sect2>
 
   </sect1>
+  <sect1 xml:id="sec.sec_prot.inactivity_logout">
+   <title>Setting an Inactivity Timeout for Interactive Shell Sessions</title>
+   <para>
+    It can be a good idea to terminate an interactive shell session after a
+    certain time of inactivity. For example an administrator might have
+    forgotten to terminate an SSH connection to a sensitive system. This
+    could provide an attack vector if an unguarded open shell session to a
+    remote machine stays open indefinitely and an attacker gets access to it.
+    Other effects of idle shell sessions are waste of system resources or
+    users blocking file systems from unmounting.
+   </para>
+   <para>
+    By default there is no inactivity timeout for shells, so nothing will
+    happen if a shell stays open unused for days or even years. It is possible
+    to configure most shells in a way that idle sessions terminate
+    automatically after a certain amount of time. In the following example we
+    will show how to set an inactivity timeout for a number of
+    common types of shells.
+   </para>
+   <para>
+    The inactivity timeout can be configured for login shells only or for all
+    interactive shells. In the latter case the inactivity timeout is running
+    individually for each shell instance. This means that timeouts will
+    accumulate. When a sub or child shell is started then the timeout runs for
+    the sub or child shell and only afterwards will the
+    timeout of the parent continue running.
+   </para>
+   <para>
+				The following table contains configuration details for a selection of
+				common shells shipped with SLE:
+			</para>
+			<informaltable frame="all" rowsep="1" colsep="1">
+				<tgroup cols="7">
+					<colspec colname="col_1" colwidth="14.2857*"/>
+					<colspec colname="col_2" colwidth="14.2857*"/>
+					<colspec colname="col_3" colwidth="14.2857*"/>
+					<colspec colname="col_4" colwidth="14.2857*"/>
+					<colspec colname="col_5" colwidth="14.2857*"/>
+					<colspec colname="col_6" colwidth="14.2857*"/>
+					<colspec colname="col_7" colwidth="14.2858*"/>
+					<thead>
+						<row>
+							<entry align="left" valign="top">package</entry>
+							<entry align="left" valign="top">shell personalities</entry>
+							<entry align="center" valign="top">shell variable</entry>
+							<entry align="center" valign="top">time unit</entry>
+							<entry align="left" valign="top">readonly setting</entry>
+							<entry align="center" valign="top">config path (only login shell)</entry>
+							<entry align="center" valign="top">config path (all shells)</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry align="left" valign="top"><para><literal>bash</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>bash, sh</literal></para></entry>
+							<entry align="center" valign="top"><para><literal>TMOUT</literal></para></entry>
+							<entry align="center" valign="top"><para>seconds</para></entry>
+							<entry align="left" valign="top"><para><literal>readonly TMOUT=</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/profile.local, /etc/profile.d/</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/bash.bashrc</literal></para></entry>
+						</row>
+						<row>
+							<entry align="left" valign="top"><para><literal>mksh</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>ksh, lksh, mksh, pdksh</literal></para></entry>
+							<entry align="center" valign="top"><para><literal>TMOUT</literal></para></entry>
+							<entry align="center" valign="top"><para>seconds</para></entry>
+							<entry align="left" valign="top"><para><literal>readonly TMOUT=</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/profile.local, /etc/profile.d/</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/ksh.kshrc.local</literal></para></entry>
+						</row>
+						<row>
+							<entry align="left" valign="top"><para><literal>tcsh</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>csh, tcsh</literal></para></entry>
+							<entry align="center" valign="top"><para><literal>autologout</literal></para></entry>
+							<entry align="center" valign="top"><para>minutes</para></entry>
+							<entry align="left" valign="top"><para><literal>set -r autologout=</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/csh.login.local</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/csh.cshrc.local</literal></para></entry>
+						</row>
+						<row>
+							<entry align="left" valign="top"><para><literal>zsh</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>zsh</literal></para></entry>
+							<entry align="center" valign="top"><para><literal>TMOUT</literal></para></entry>
+							<entry align="center" valign="top"><para>seconds</para></entry>
+							<entry align="left" valign="top"><para><literal>readonly TMOUT=</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/profile.local, /etc/profile.d/</literal></para></entry>
+							<entry align="left" valign="top"><para><literal>/etc/zsh.zshrc.local</literal></para></entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</informaltable>
+   <para>
+    Every listed shell supports an internal timeout shell variable that can be
+    set to a specific time value to activate the inactivity timeout. If you want
+    to prevent users from overriding the timeout setting you can mark the
+    corresponding shell timeout variable as readonly. The corresponding variable
+    declaration syntax is also found in the table above.
+			</para>
+			<para>
+    To configure the inactivity timeout you need to add the matching timeout
+    variable declaration to a shell startup script. Use either the path for
+    login shells only, or the one for all shells as listed in the table. The
+    following example uses paths and settings that are suitable for
+    <literal>bash</literal> and <literal>ksh</literal>
+    to setup a readonly login shell timeout that cannot be overriden by users.
+			 Create the file <literal>/etc/profile.d/timeout.sh</literal> with the
+    following content:
+			</para>
+			<screen># /etc/profile.d/timeout.sh for SUSE Linux
+#
+# Timeout in seconds until the bash/ksh session is terminated
+# in case of inactivity.
+# 24h = 86400 sec
+readonly TMOUT=86400</screen>
+
+   <tip>
+				<para>
+					We recommend to use the <literal>screen</literal> tool in order to
+					detach sessions before logging out. Screen sessions are not terminated
+					and can be re-attached whenever it is required. Active session can be
+					locked without logging out (read about <literal>C-a x</literal> /
+					<literal>lockscreen</literal> in <literal>man screen</literal> for details).
+				</para>
+			</tip>
+			<note>
+				<para>
+     This feature is only a utility that can help avoiding risks if a user is
+     forgetful or follows unsafe practices. It does not protect against
+     malicious users, however. The timeout discussed here only applies to
+     certain interactive wait states of a shell. A malicious user can always
+     find ways to circumvent the timeout and keep his session open anyways.
+				</para>
+			</note>
+
+  </sect1>
   <sect1 xml:id="sec.sec_prot.dos">
    <title>Preventing Accidental Denial of Service</title>
 
